@@ -34,13 +34,13 @@ function App() {
 	}
 
 	return (
-		<div className="flex flex-col items-center p-10">
-			<textarea onChange={(event) => setBaseText(event.target.value)} className="bg-gray-200 rounded-md w-96 h-36 resize-none p-2" />
+		<div className="flex flex-col items-center py-10 sm:px-10 w-full">
+			<textarea onChange={(event) => setBaseText(event.target.value)} className="bg-gray-200 rounded-md sm:w-96 h-36 w-[90%] resize-none p-2" />
 			<button className="bg-blue-500 text-white font-black p-2 rounded-md my-4" onClick={convert}>
 				Skapa Ordlista
 			</button>
 			{wordList.length > 0 && (
-				<div className="relative w-96">
+				<div className="relative sm:w-96 w-[90%]">
 					<ul>
 						{wordList.map((word, index) => (
 							<Word text={word} removeWord={removeWord} key={index + word} />
