@@ -16,7 +16,6 @@ function App() {
 		console.log(words);
 		words.forEach((word, index, array) => {
 			let text = word.toLowerCase();
-			console.log(text);
 			text = text[0].toUpperCase() + text.substring(1);
 			array[index] = text;
 		});
@@ -59,7 +58,7 @@ function App() {
 			)}
 			<p className="mt-auto mb-2">
 				&copy; 2022 -{" "}
-				<a className="text-blue-700" href="https://www.eliasjorgensen.se">
+				<a className="text-blue-700" href="https://www.eliasjorgensen.se" target="_blank" rel="noreferrer">
 					Elias Jörgensen
 				</a>
 			</p>
