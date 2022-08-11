@@ -13,11 +13,8 @@ function App() {
 			.replace(/[\s\n\.\,\:\;\(\)]+/g, " ")
 			.trim()
 			.split(/\s+/);
-		console.log(words);
 		words.forEach((word, index, array) => {
-			let text = word.toLowerCase();
-			text = text[0].toUpperCase() + text.substring(1);
-			array[index] = text;
+			array[index] = word.toLowerCase();
 		});
 		setWordList(Array.from(new Set(words)));
 	}
