@@ -2,6 +2,7 @@ import "./App.css";
 
 import { MouseEvent, useEffect, useRef, useState } from "react";
 
+import Cookies from "./components/Cookies";
 import Word from "./Word";
 import { createWorker } from "tesseract.js";
 
@@ -211,6 +212,7 @@ function App() {
 					</div>
 				</div>
 			)}
+			<Cookies />
 			<p className="mt-auto mb-2">
 				&copy; 2022 -{" "}
 				<a className="text-blue-700" href="https://www.eliasjorgensen.se" target="_blank" rel="noreferrer">
