@@ -1,10 +1,11 @@
 import "./App.css";
 
-import { MouseEvent, useEffect, useRef, useState } from "react";
+import { ImageLike, createWorker } from "tesseract.js";
+import { MouseEvent, createElement, useEffect, useRef, useState } from "react";
 
 import Cookies from "./components/Cookies";
 import Word from "./Word";
-import { createWorker } from "tesseract.js";
+import preprocessImage from "./preprocess";
 
 interface ButtonAlert {
 	visible: boolean;
@@ -69,22 +70,45 @@ function App() {
 
 	function uploadImage(image: File) {
 		setUploading(true);
-		const worker = createWorker({
-			corePath: undefined,
-		});
 
-		(async () => {
-			await worker.load();
-			await worker.loadLanguage("swe");
-			await worker.initialize("swe");
-			const {
-				data: { text },
-			} = await worker.recognize(image);
+		const fileReader = new FileReader();
+		const img = new Image();
+		fileReader.readAsDataURL(image);
+		fileReader.onload = () => {
+			img.src = fileReader.result as string;
+		};
 
-			setBaseText(text);
-			await worker.terminate();
-			setUploading(false);
-		})();
+		img.onload = () => {
+			const canvas = document.createElement("canvas");
+			canvas.width = img.width;
+			canvas.height = img.height;
+
+			const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+			ctx.drawImage(img, 0, 0, img.width, img.height);
+
+			ctx.putImageData(preprocessImage(canvas), 0, 0);
+
+			const imageBlob = new Promise((resolve) => {
+				canvas.toBlob(resolve);
+			});
+
+			const worker = createWorker({
+				corePath: undefined,
+			});
+
+			(async () => {
+				await worker.load();
+				await worker.loadLanguage("swe+eng");
+				await worker.initialize("swe+eng");
+				const {
+					data: { text },
+				} = await worker.recognize((await imageBlob) as ImageLike);
+
+				setBaseText(text);
+				await worker.terminate();
+				setUploading(false);
+			})();
+		};
 	}
 
 	function convert() {
