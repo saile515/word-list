@@ -89,7 +89,7 @@ function App() {
 
 	function convert() {
 		const words = baseText
-			.replace(/[\s\n\.\,\:\;\(\)\-\?\!\d\"\']+/g, " ")
+			.replace(/[^\p{L}]+/gu, " ")
 			.trim()
 			.split(/\s+/);
 		words.forEach((word, index, array) => {
@@ -187,7 +187,7 @@ function App() {
 				Skapa Ordlista
 			</button>
 			{wordList.length > 0 && (
-				<div className="relative sm:w-96 w-[90%] min-h-[6rem] flex flex-col flex-shrink overflow-hidden">
+				<div className="relative sm:w-96 w-[90%] min-h-[12rem] flex flex-col flex-shrink overflow-hidden">
 					<label className="ml-auto mb-2" htmlFor="filterLevel">
 						Filter nivå:
 						<select
