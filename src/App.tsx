@@ -150,7 +150,7 @@ function App() {
 							elias.jorgensen2006@gmail.com
 						</a>{" "}
 						eller{" "}
-						<a className="text-blue-800" href="https://eliasjorgensen.se" rel="noreferrer">
+						<a className="text-blue-800" href="https://eliasjorgensen.se" rel="noreferrer" target="_blank">
 							eliasjorgensen.se
 						</a>
 						.
