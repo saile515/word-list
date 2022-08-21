@@ -1,69 +1,8 @@
 import "./App.css";
 
-import { MouseEvent, useState } from "react";
+import { MouseEvent, useEffect, useState } from "react";
 
 import Word from "./Word";
-
-const filterList = [
-	"i",
-	"och",
-	"att",
-	"det",
-	"som",
-	"en",
-	"på",
-	"är",
-	"av",
-	"för",
-	"med",
-	"till",
-	"den",
-	"har",
-	"de",
-	"inte",
-	"om",
-	"ett",
-	"han",
-	"men",
-	"var",
-	"jag",
-	"sig",
-	"från",
-	"vi",
-	"så",
-	"kan",
-	"man",
-	"när",
-	"år",
-	"säger",
-	"hon",
-	"under",
-	"också",
-	"efter",
-	"eller",
-	"nu",
-	"sin",
-	"där",
-	"vid",
-	"mot",
-	"ska",
-	"skulle",
-	"kommer",
-	"ut",
-	"får",
-	"finns",
-	"vara",
-	"hade",
-	"alla",
-	"andra",
-	"mycket",
-	"än",
-	"här",
-	"då",
-	"bara",
-	"in",
-	"blir",
-];
 
 interface ButtonAlert {
 	visible: boolean;
@@ -73,6 +12,7 @@ interface ButtonAlert {
 
 function FunctionButton(props: { callback: (event?: MouseEvent) => any; clickMessage: string; hoverMessage?: string; icon: string }) {
 	const [alert, setAlert] = useState<ButtonAlert>({ visible: false, message: "", color: "blue" });
+
 	return (
 		<div className="relative items-center mb-2 flex">
 			<button
@@ -114,10 +54,18 @@ function FunctionButton(props: { callback: (event?: MouseEvent) => any; clickMes
 function App() {
 	const [baseText, setBaseText] = useState<string>("");
 	const [wordList, setWordList] = useState<string[]>([]);
+	const [filterList, setFilterList] = useState<{ 1: string[]; 2: string[]; 3: string[] }>();
+	const [filterLevel, setFilterLevel] = useState(1);
+
+	useEffect(() => {
+		fetch("/lang/sv.json")
+			.then((res) => res.json())
+			.then((res) => setFilterList(res));
+	}, []);
 
 	function convert() {
 		const words = baseText
-			.replace(/[\s\n\.\,\:\;\(\)]+/g, " ")
+			.replace(/[\s\n\.\,\:\;\(\)\-\?\!\d\"\']+/g, " ")
 			.trim()
 			.split(/\s+/);
 		words.forEach((word, index, array) => {
@@ -135,13 +83,21 @@ function App() {
 	}
 
 	function filter() {
+		if (!filterList) return;
 		let wordListCopy = [...wordList];
-		filterList.forEach((word) => (wordListCopy = wordListCopy.filter((item) => item != word)));
+		for (let i = 1; i <= filterLevel; i++) {
+			filterList[i as keyof typeof filterList].forEach((word) => (wordListCopy = wordListCopy.filter((item) => item != word)));
+		}
+
 		setWordList(wordListCopy);
 	}
 
 	function sort() {
 		setWordList([...wordList].sort());
+	}
+
+	function clear() {
+		setWordList([]);
 	}
 
 	return (
@@ -156,16 +112,28 @@ function App() {
 				Skapa Ordlista
 			</button>
 			{wordList.length > 0 && (
-				<div className="relative sm:w-96 w-[90%] min-h-[6rem] flex flex-shrink overflow-hidden">
+				<div className="relative sm:w-96 w-[90%] min-h-[6rem] flex flex-col flex-shrink overflow-hidden">
+					<label className="ml-auto mb-2" htmlFor="filterLevel">
+						Filter nivå:
+						<select
+							name="filterLevel"
+							className="bg-gray-100 rounded-full px-1 ml-1 shadow"
+							onChange={(event) => setFilterLevel(parseInt(event.target.value))}>
+							<option value={1}>Nivå 1</option>
+							<option value={2}>Nivå 2</option>
+							<option value={3}>Nivå 3</option>
+						</select>
+					</label>
 					<ul className="overflow-y-auto w-full p-1">
 						{wordList.map((word, index) => (
 							<Word text={word} removeWord={removeWord} key={index + word} />
 						))}
 					</ul>
-					<div className="absolute right-0 top-0 flex flex-col">
-						<FunctionButton callback={copy} clickMessage="Kopierad till urklipp" hoverMessage="Kopiera" icon="/copy.svg" />
+					<div className="absolute right-3 sm:right-5 top-10 flex flex-col">
 						<FunctionButton callback={filter} clickMessage="Filtrerade ordlista" hoverMessage="Filtrera vanliga ord" icon="/filter.svg" />
 						<FunctionButton callback={sort} clickMessage="Sorterade ordlista" hoverMessage="Sortera i bokstavsordning" icon="/sort.svg" />
+						<FunctionButton callback={copy} clickMessage="Kopierad till urklipp" hoverMessage="Kopiera" icon="/copy.svg" />
+						<FunctionButton callback={clear} clickMessage="Ordlista rensad" hoverMessage="Rensa ordlista" icon="/trashcan.svg" />
 					</div>
 				</div>
 			)}
